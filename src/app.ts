@@ -1,3 +1,17 @@
+// AutoBind decorator
+function AutoBind(_: any, _2: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    },
+  };
+  return adjDescriptor;
+}
+
+// ProjectInput Class
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -34,6 +48,7 @@ class ProjectInput {
     this.attach();
   }
 
+  @AutoBind
   private submitHandler(event: Event) {
     // httpリクエストが送信されないようにする
     event.preventDefault();
@@ -43,7 +58,7 @@ class ProjectInput {
   private configure() {
     // submitHandlerで使用しているthisはこのクラスを参照しているわけではないので
     // bindしないとundefinedになる。bind(this)でクラスのthisを渡すことによってsubmitHandler側でthisを参照することができる
-    this.element.addEventListener("submit", this.submitHandler.bind(this));
+    this.element.addEventListener("submit", this.submitHandler);
   }
 
   private attach() {
