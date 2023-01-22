@@ -28,21 +28,21 @@ function validate(validatableInput: Validatable) {
     typeof validatableInput.value === "string"
   ) {
     isValid =
-      isValid && validatableInput.value.length <= validatableInput.maxLength!;
+      isValid && validatableInput.value.length <= validatableInput.maxLength;
   }
   // 最小値以上かのチェック
   if (
     validatableInput.min != null &&
     typeof validatableInput.value === "number"
   ) {
-    isValid = isValid && validatableInput.value >= validatableInput.min!;
+    isValid = isValid && validatableInput.value >= validatableInput.min;
   }
   // 最大値以下かのチェック
   if (
     validatableInput.max != null &&
     typeof validatableInput.value === "number"
   ) {
-    isValid = isValid && validatableInput.value >= validatableInput.max!;
+    isValid = isValid && validatableInput.value <= validatableInput.max;
   }
 
   return isValid;
@@ -98,6 +98,7 @@ class ProjectInput {
     this.attach();
   }
 
+  // フォームの内容をリセット
   private clearInputs() {
     this.titleInputElement.value = "";
     this.descriptionInputElement.value = "";
@@ -121,16 +122,16 @@ class ProjectInput {
     };
 
     const mandayValidatable: Validatable = {
-      value: enteredDescription,
+      value: enteredManday,
       required: true,
       min: 1,
       max: 1000,
     };
 
     if (
-      validate(titleValidatable) ||
-      validate(descriptionValidatable) ||
-      validate(mandayValidatable)
+      !validate(titleValidatable) ||
+      !validate(descriptionValidatable) ||
+      !validate(mandayValidatable)
     ) {
       alert("入力値が正しくありません。再度お試しください。");
       return;
