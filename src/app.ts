@@ -149,7 +149,7 @@ class ProjectList {
   }
 
   private renderContent() {
-    const listId = `${this.type} - projects - list`;
+    const listId = `${this.type}-projects-list`;
     this.element.querySelector("ul")!.id = listId;
     this.element.querySelector("h2")!.textContent =
       this.type === "active" ? "実行中プロジェクト" : "完了プロジェクト";
@@ -177,6 +177,7 @@ class ProjectInput {
     );
 
     this.element = importedNode.firstElementChild as HTMLFormElement;
+
     this.element.id = "user-input";
 
     this.titleInputElement = this.element.querySelector(
