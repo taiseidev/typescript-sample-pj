@@ -145,6 +145,7 @@ class ProjectList {
     // 新しくリストが追加されたときに呼び出される
     projectState.addListener((projects: Project[]) => {
       const relevantProjects = projects.filter((prj) => {
+        // クラスのタイプがactiveの場合はProjectStatusのみのプロジェクトを返却雨
         if (this.type === "active") {
           return prj.status === ProjectStatus.Active;
         }
@@ -162,6 +163,7 @@ class ProjectList {
     const listEl = document.getElementById(
       `${this.type}-projects-list`
     )! as HTMLUListElement;
+    listEl.innerHTML = "";
     for (const prjItem of this.assignedProjects) {
       const listItem = document.createElement("li");
       listItem.textContent = prjItem.title;
