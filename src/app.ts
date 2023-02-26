@@ -1,4 +1,18 @@
+// AutoBind decorator
+function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    },
+  };
+  return adjDescriptor;
+}
+
 // プロジェクトの要素を表示する
+// ProjectInput Class
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   // 親要素（<div id="app"></div>）
@@ -41,6 +55,7 @@ class ProjectInput {
     this.attach();
   }
 
+  @autobind
   private submitHandler(event: Event) {
     // ↓このイベントからHTTPリクエストが送られないように設定
     event.preventDefault();
@@ -49,7 +64,7 @@ class ProjectInput {
 
   // イベントリスナーの設定
   private configure() {
-    this.element.addEventListener("submit", this.submitHandler.bind(this));
+    this.element.addEventListener("submit", this.submitHandler);
   }
 
   // hostElementに要素追加して画面を表示するメソッド
