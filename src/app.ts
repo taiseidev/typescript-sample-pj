@@ -5,6 +5,10 @@ class ProjectInput {
   hostElement: HTMLDivElement;
   element: HTMLFormElement;
 
+  titleInputElement: HTMLInputElement;
+  descriptionInputElement: HTMLInputElement;
+  mandayInputElement: HTMLInputElement;
+
   constructor() {
     this.templateElement = document.getElementById(
       "project-input"
@@ -21,7 +25,31 @@ class ProjectInput {
     this.element = importedNode.firstElementChild as HTMLFormElement;
     // user-inputというidを指定することによってcssを適用
     this.element.id = "user-input";
+
+    // this.elementはFormでこの要素に対してquerySelectorを実行することによってその下の要素を取得することができる。
+    this.titleInputElement = this.element.querySelector(
+      "#title"
+    )! as HTMLInputElement;
+    this.descriptionInputElement = this.element.querySelector(
+      "#description"
+    )! as HTMLInputElement;
+    this.mandayInputElement = this.element.querySelector(
+      "#manday"
+    )! as HTMLInputElement;
+
+    this.configure();
     this.attach();
+  }
+
+  private submitHandler(event: Event) {
+    // ↓このイベントからHTTPリクエストが送られないように設定
+    event.preventDefault();
+    console.log(this.titleInputElement.value);
+  }
+
+  // イベントリスナーの設定
+  private configure() {
+    this.element.addEventListener("submit", this.submitHandler.bind(this));
   }
 
   // hostElementに要素追加して画面を表示するメソッド
