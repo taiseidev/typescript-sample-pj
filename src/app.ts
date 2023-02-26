@@ -55,11 +55,45 @@ class ProjectInput {
     this.attach();
   }
 
+  // 各要素を取得してバリデーションチェック。完了したらタプル型で返却
+  // 戻り値がない場合はundefinedではなくvoidを指定する
+  private gatherUserInput(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDescription = this.descriptionInputElement.value;
+    const enteredManday = this.mandayInputElement.value;
+    // 各要素が空白でないかのチェック
+    if (
+      enteredTitle.trim().length === 0 ||
+      enteredDescription.trim().length === 0 ||
+      enteredManday.trim().length === 0
+    ) {
+      alert("入力値が正しくありません。再度お試しください。");
+      return;
+    } else {
+      return [enteredTitle, enteredDescription, +enteredManday];
+    }
+  }
+
+  // submitされた時にフォームの内容をクリアする
+  private clearInputs() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.mandayInputElement.value = "";
+  }
+
   @autobind
   private submitHandler(event: Event) {
     // ↓このイベントからHTTPリクエストが送られないように設定
     event.preventDefault();
-    console.log(this.titleInputElement.value);
+    // 入力内容を取得してタプル型で返却
+    const userInput = this.gatherUserInput();
+    // タプルは配列のため、配列かどうかのチェックを行っている
+    // ランタイム上ではタプルか判別することができない
+    if (Array.isArray(userInput)) {
+      const [title, desc, manday] = userInput;
+      console.log(title + desc + manday);
+      this.clearInputs();
+    }
   }
 
   // イベントリスナーの設定
