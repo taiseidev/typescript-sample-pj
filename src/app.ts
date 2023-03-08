@@ -62,6 +62,43 @@ function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
   return adjDescriptor;
 }
 
+// ProjectList Class
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  // 親要素（<div id="app"></div>）
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+  constructor(private type: "active" | "finished") {
+    this.templateElement = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    );
+    this.element = importedNode.firstElementChild as HTMLElement;
+    // user-inputというidを指定することによってcssを適用
+    this.element.id = `${this.type}-projects`;
+    this.attach();
+    this.renderContent();
+  }
+
+  // 各リストにIDを割り振る
+  private renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    // h2にタイトルを追加
+    this.element.querySelector("h2")!.textContent =
+      this.type == "active" ? "実行中プロジェクト" : "完了プロジェクト";
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("beforeend", this.element);
+  }
+}
+
 // プロジェクトの要素を表示する
 // ProjectInput Class
 class ProjectInput {
@@ -178,3 +215,6 @@ class ProjectInput {
 
 // インスタンス化してフォームを表示する
 const prjInput = new ProjectInput();
+
+const activePrjList = new ProjectList("active");
+const finishedPrjList = new ProjectList("finished");
