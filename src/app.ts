@@ -1,3 +1,47 @@
+// Project State Management
+// 状態管理を行うクラス
+class ProjectState {
+  // 何か状態に変化があった場合に配列に保持している関数をすべて発火させる。
+  private listeners: any[] = [];
+  private projects: any[] = [];
+  private static instance: ProjectState;
+
+  private constructor() {}
+
+  // インスタンスがすでに存在するかどうかのチェック
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+
+    this.instance = new ProjectState();
+    return this.instance;
+  }
+
+  addListener(listenerFn: Function) {
+    this.listeners.push(listenerFn);
+  }
+
+  // プロジェクトを追加
+  addProject(title: string, description: string, manday: number) {
+    const newProject = {
+      id: Math.random().toString(),
+      title: title,
+      description: description,
+      manday: manday,
+    };
+
+    this.projects.push(newProject);
+
+    for (const listenerFn of this.listeners) {
+      listenerFn(this.projects.slice());
+    }
+  }
+}
+
+// グローバルステート
+const projectState = ProjectState.getInstance();
+
 // Validation
 // バリデーション用のインターフェース
 interface Validatable {
@@ -68,11 +112,14 @@ class ProjectList {
   // 親要素（<div id="app"></div>）
   hostElement: HTMLDivElement;
   element: HTMLElement;
+  assignedProjects: any[];
+
   constructor(private type: "active" | "finished") {
     this.templateElement = document.getElementById(
       "project-list"
     )! as HTMLTemplateElement;
     this.hostElement = document.getElementById("app")! as HTMLDivElement;
+    this.assignedProjects = [];
 
     const importedNode = document.importNode(
       this.templateElement.content,
@@ -81,8 +128,25 @@ class ProjectList {
     this.element = importedNode.firstElementChild as HTMLElement;
     // user-inputというidを指定することによってcssを適用
     this.element.id = `${this.type}-projects`;
+
+    projectState.addListener((projects: any[]) => {
+      this.assignedProjects = projects;
+      this.renderProjects();
+    });
+
     this.attach();
     this.renderContent();
+  }
+
+  private renderProjects() {
+    const listEl = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    for (const prjItem of this.assignedProjects) {
+      const listItem = document.createElement("li");
+      listItem.textContent = prjItem.title;
+      listEl.appendChild(listItem);
+    }
   }
 
   // 各リストにIDを割り振る
@@ -197,7 +261,7 @@ class ProjectInput {
     // ランタイム上ではタプルか判別することができない
     if (Array.isArray(userInput)) {
       const [title, desc, manday] = userInput;
-      console.log(title + desc + manday);
+      projectState.addProject(title, desc, manday);
       this.clearInputs();
     }
   }
